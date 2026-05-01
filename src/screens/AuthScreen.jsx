@@ -120,12 +120,63 @@ export default function AuthScreen() {
     }
   };
 
-  // --- RESEND OTP ---
+  // --- FORGOT PASSWORD ---
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    if (!form.email) return toast.error('Please enter your email.');
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(form.email.trim());
+      if (error) throw error;
+      setPendingEmail(form.email.trim());
+      setMode('reset-otp');
+      toast.success('Password reset code sent to your email!');
+      startResendCooldown();
+    } catch (err) {
+      toast.error(getFriendlyError(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // --- RESET PASSWORD VERIFY ---
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    if (otp.length < 6) return toast.error('Please enter the 6-digit code.');
+    if (form.password.length < 6) return toast.error('New password must be at least 6 characters.');
+    if (form.password !== form.confirmPassword) return toast.error('Passwords do not match.');
+    setLoading(true);
+    try {
+      // 1. Verify the OTP for password recovery
+      const { error } = await supabase.auth.verifyOtp({
+        email: pendingEmail,
+        token: otp.trim(),
+        type: 'recovery',
+      });
+      if (error) throw error;
+      
+      // 2. We now have a session, update the password
+      const { error: updateError } = await supabase.auth.updateUser({ password: form.password });
+      if (updateError) throw updateError;
+
+      toast.success('Password reset successfully! 🎉');
+      setMode('login');
+      setOtp('');
+      setForm(prev => ({ ...prev, password: '', confirmPassword: '' }));
+    } catch (err) {
+      toast.error(getFriendlyError(err) || 'Invalid or expired code.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleResendOtp = async () => {
     if (resendCooldown > 0) return;
     try {
+      // Different type based on mode
+      const type = mode === 'reset-otp' ? 'recovery' : 'signup';
       const { error } = await supabase.auth.resend({
-        type: 'signup',
+        type: type,
         email: pendingEmail,
       });
       if (error) throw error;
@@ -165,7 +216,7 @@ export default function AuthScreen() {
         <p className="auth-tagline">Smart billing for every shop</p>
       </motion.div>
 
-      {/* === OTP VERIFICATION SCREEN === */}
+      {/* === OTP VERIFICATION SCREEN (SIGNUP) === */}
       <AnimatePresence mode="wait">
         {mode === 'otp' ? (
           <motion.div
@@ -233,6 +284,135 @@ export default function AuthScreen() {
               className="otp-back-btn"
               onClick={() => { setMode('register'); setOtp(''); }}
             >
+              ← Go back
+            </button>
+          </motion.div>
+        ) : mode === 'forgot-password' ? (
+          <motion.div
+            key="forgot"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="auth-form"
+          >
+            <div className="otp-header">
+              <div className="otp-icon-wrap">
+                <Lock size={32} color="#7C3AED" />
+              </div>
+              <h3 className="otp-title">Reset Password</h3>
+              <p className="otp-desc">
+                Enter your email address and we'll send you a 6-digit code to reset your password.
+              </p>
+            </div>
+
+            <form onSubmit={handleForgotPassword}>
+              <div className="form-group">
+                <label className="form-label">Email Address</label>
+                <div className="form-input-icon">
+                  <span className="input-icon"><Mail size={17} /></span>
+                  <input
+                    type="email"
+                    className="form-input"
+                    placeholder="you@example.com"
+                    value={form.email}
+                    onChange={e => update('email', e.target.value)}
+                    autoComplete="email"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="btn btn-primary btn-full auth-submit"
+                disabled={loading}
+              >
+                {loading ? (
+                  <div className="spinner" style={{ borderTopColor: '#fff', borderColor: 'rgba(255,255,255,0.3)' }} />
+                ) : (
+                  <><ShieldCheck size={18} /> Send Reset Code</>
+                )}
+              </button>
+            </form>
+
+            <button
+              className="otp-back-btn"
+              onClick={() => setMode('login')}
+            >
+              ← Back to Sign In
+            </button>
+          </motion.div>
+        ) : mode === 'reset-otp' ? (
+           <motion.div
+            key="reset-otp"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="auth-form"
+          >
+            <div className="otp-header" style={{ marginBottom: 16 }}>
+              <h3 className="otp-title">Enter Code & New Password</h3>
+              <p className="otp-desc">
+                Code sent to <strong>{pendingEmail}</strong>
+              </p>
+            </div>
+
+            <form onSubmit={handleResetPassword}>
+              <div className="form-group">
+                <input
+                  className="form-input otp-input"
+                  type="number"
+                  placeholder="000000"
+                  maxLength={6}
+                  value={otp}
+                  onChange={e => setOtp(e.target.value.slice(0, 6))}
+                  autoFocus
+                  style={{ textAlign: 'center', fontSize: 24, fontWeight: 700, letterSpacing: 8, padding: '8px' }}
+                />
+              </div>
+
+              <div className="form-group" style={{ marginTop: 12 }}>
+                <div className="form-input-icon">
+                  <span className="input-icon"><Lock size={17} /></span>
+                  <input
+                    type={showPass ? 'text' : 'password'}
+                    className="form-input"
+                    placeholder="New Password"
+                    value={form.password}
+                    onChange={e => update('password', e.target.value)}
+                    style={{ paddingRight: '46px' }}
+                  />
+                  <button type="button" className="pass-toggle" onClick={() => setShowPass(s => !s)}>
+                    {showPass ? <EyeOff size={17} /> : <Eye size={17} />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <div className="form-input-icon">
+                  <span className="input-icon"><Lock size={17} /></span>
+                  <input
+                    type={showPass ? 'text' : 'password'}
+                    className="form-input"
+                    placeholder="Confirm New Password"
+                    value={form.confirmPassword}
+                    onChange={e => update('confirmPassword', e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <button type="submit" className="btn btn-primary btn-full auth-submit" disabled={loading}>
+                {loading ? <div className="spinner" style={{ borderTopColor: '#fff', borderColor: 'rgba(255,255,255,0.3)' }} /> : 'Reset Password'}
+              </button>
+            </form>
+
+            <div className="otp-resend-row">
+              <button className="otp-resend-btn" onClick={handleResendOtp} disabled={resendCooldown > 0}>
+                {resendCooldown > 0 ? <><RefreshCw size={13} /> Resend in {resendCooldown}s</> : <><RefreshCw size={13} /> Resend Code</>}
+              </button>
+            </div>
+            <button className="otp-back-btn" onClick={() => setMode('forgot-password')}>
               ← Go back
             </button>
           </motion.div>
@@ -345,7 +525,7 @@ export default function AuthScreen() {
 
                 {mode === 'login' && (
                   <motion.div custom={2} variants={itemVariants} initial="initial" animate="animate">
-                    <button type="button" className="forgot-link">Forgot password?</button>
+                    <button type="button" className="forgot-link" onClick={() => { setMode('forgot-password'); setForm({ ...form, email: '' }); }}>Forgot password?</button>
                   </motion.div>
                 )}
 

@@ -141,8 +141,8 @@ export default function BillingScreen() {
     };
 
     // Create base64 URL-safe string
-    const encodedData = btoa(JSON.stringify(compactData));
-    const qrUrl = `https://shafin-p.github.io/invoeazy/?data=${encodedData}`;
+    const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(compactData))));
+    const qrUrl = `https://shafin-p.github.io/Invoeazy/?data=${encodedData}`;
     billData.qrUrl = qrUrl;
 
     if (isKhata) {

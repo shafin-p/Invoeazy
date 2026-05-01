@@ -142,7 +142,9 @@ export function AppProvider({ children }) {
 
       if (currentUser) {
         try {
+          // 1. Check if user is an owner
           const { data: shopData } = await getShopByOwner(currentUser.id);
+          
           if (shopData) {
             setShop(shopData);
             const local = loadLocalProducts(shopData.id);
@@ -155,9 +157,35 @@ export function AppProvider({ children }) {
             }
             setBills(loadLocalBills(shopData.id));
             setKhata(loadLocalKhata(shopData.id));
+          } else {
+            // 2. Not an owner, check if user is an employee
+            const { getShopForEmployee } = await import('../lib/supabase.js');
+            const { data: empData } = await getShopForEmployee(currentUser.email);
+            
+            if (empData && empData.shops) {
+              const employeeShop = empData.shops;
+              setShop(employeeShop);
+              
+              // Save permissions in local storage so the UI can adapt
+              localStorage.setItem('invoeazy_emp_permissions', JSON.stringify(empData.permissions));
+              
+              const local = loadLocalProducts(employeeShop.id);
+              if (local) {
+                setProducts(local);
+              } else {
+                const defaults = getDefaultProducts(employeeShop.type);
+                setProducts(defaults);
+                saveLocalProducts(employeeShop.id, defaults);
+              }
+              setBills(loadLocalBills(employeeShop.id));
+              setKhata(loadLocalKhata(employeeShop.id));
+            } else {
+              // User is neither owner nor employee -> needs to setup shop
+              setShop(null);
+            }
           }
         } catch (e) {
-          console.warn('Supabase not configured:', e.message);
+          console.warn('Supabase error fetching shop/employee:', e.message);
         }
       } else {
         setShop(null);

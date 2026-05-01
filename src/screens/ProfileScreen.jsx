@@ -7,6 +7,8 @@ import {
 import { useApp, SHOP_TYPES } from '../context/AppContext';
 import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
+import EmployeeManagerScreen from './EmployeeManagerScreen';
+import HelpScreen from './HelpScreen';
 import './ProfileScreen.css';
 
 
@@ -14,6 +16,8 @@ export default function ProfileScreen() {
   const { user, shop, setUser, setShop, updateShopState, logout } = useApp();
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showEmployees, setShowEmployees] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   const [form, setForm] = useState({
     name: shop?.name || '',
@@ -63,6 +67,14 @@ export default function ProfileScreen() {
 
   const getInitials = (name) =>
     name ? name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'ME';
+
+  if (showEmployees) {
+    return <EmployeeManagerScreen onBack={() => setShowEmployees(false)} />;
+  }
+
+  if (showHelp) {
+    return <HelpScreen onBack={() => setShowHelp(false)} />;
+  }
 
   return (
     <div className="profile-screen">
@@ -181,7 +193,9 @@ export default function ProfileScreen() {
                   <h3>Manage</h3>
                 </div>
                 <div className="settings-list">
-                  <SettingsItem icon={<Users size={18} />} label="Employees" sublabel="Coming in Phase 2" color="#10B981" />
+                  <div onClick={() => setShowEmployees(true)} style={{ cursor: 'pointer' }}>
+                    <SettingsItem icon={<Users size={18} />} label="Employees" sublabel="Manage staff and roles" color="#10B981" />
+                  </div>
                   <SettingsItem icon={<Shield size={18} />} label="Permissions" sublabel="Manage role access" color="#3B82F6" />
                   <SettingsItem icon={<Bell size={18} />} label="Notifications" sublabel="Bill reminders" color="#F59E0B" />
                 </div>
@@ -190,7 +204,9 @@ export default function ProfileScreen() {
                   <h3>Support</h3>
                 </div>
                 <div className="settings-list">
-                  <SettingsItem icon={<HelpCircle size={18} />} label="Help & FAQ" color="#7C3AED" />
+                  <div onClick={() => setShowHelp(true)} style={{ cursor: 'pointer' }}>
+                    <SettingsItem icon={<HelpCircle size={18} />} label="Help & FAQ" color="#7C3AED" />
+                  </div>
                   <SettingsItem icon={<Info size={18} />} label="About Invoeazy" sublabel="v1.0.0 — Phase 1" color="#6B7280" />
                 </div>
 

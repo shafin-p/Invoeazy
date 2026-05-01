@@ -12,6 +12,8 @@ jobs:
   build:
     name: Build Capacitor APK
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout source code
@@ -30,6 +32,12 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+      - name: Deploy to GitHub Pages (for QR bill viewer)
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
 
       - name: Set up Java JDK
         uses: actions/setup-java@v4
@@ -53,3 +61,4 @@ jobs:
         with:
           name: Invoeazy-App-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
+

@@ -40,6 +40,15 @@ export const getShopByOwner = async (userId) => {
   return { data, error };
 };
 
+export const getShopForEmployee = async (userEmail) => {
+  const { data, error } = await supabase
+    .from('employees')
+    .select('*, shops(*)')
+    .eq('email', userEmail)
+    .single();
+  return { data, error };
+};
+
 export const createShop = async (shopData) => {
   const { data, error } = await supabase
     .from('shops')

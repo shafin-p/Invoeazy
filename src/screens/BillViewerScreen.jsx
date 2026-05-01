@@ -11,13 +11,14 @@ export default function BillViewerScreen() {
       const searchParams = new URLSearchParams(window.location.search);
       const dataParam = searchParams.get('data') || searchParams.get('billData');
       if (!dataParam) throw new Error('No bill data found in link.');
-      
-      const decoded = JSON.parse(atob(dataParam));
+
+      // Decode safely (handles Unicode characters like ₹)
+      const decoded = JSON.parse(decodeURIComponent(escape(atob(dataParam))));
       setBill(decoded);
     } catch (err) {
-      setError('Invalid or corrupted bill link.');
+      setError('Invalid or corrupted bill link. Please ask the shop to re-generate the bill.');
     }
-  }, [searchParams]);
+  }, []);
 
   if (error) {
     return (
