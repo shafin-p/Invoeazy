@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, MessageSquare, Mail, PhoneCall, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { supabase } from '../lib/supabase';
+import { useApp } from '../context/AppContext';
 
 const FAQS = [
   {
@@ -27,6 +29,7 @@ const FAQS = [
 ];
 
 export default function HelpScreen({ onBack }) {
+  const { user } = useApp();
   const [openFaq, setOpenFaq] = useState(null);
   const [feedback, setFeedback] = useState('');
   const [sending, setSending] = useState(false);
@@ -35,17 +38,27 @@ export default function HelpScreen({ onBack }) {
     setOpenFaq(openFaq === idx ? null : idx);
   };
 
-  const handleFeedbackSubmit = (e) => {
+  const handleFeedbackSubmit = async (e) => {
     e.preventDefault();
     if (!feedback.trim()) return toast.error('Please write something first.');
     setSending(true);
     
-    // Simulate sending feedback (in a real app, this would push to a Supabase table or email)
-    setTimeout(() => {
-      setSending(false);
+    try {
+      const { error } = await supabase.from('feedback').insert([{
+        message: feedback.trim(),
+        user_email: user?.email || 'demo_user'
+      }]);
+      
+      if (error) throw error;
+      
       setFeedback('');
       toast.success('Feedback sent! Thank you.');
-    }, 1200);
+    } catch (err) {
+      toast.error('Failed to send feedback. Try again later.');
+      console.error(err);
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
