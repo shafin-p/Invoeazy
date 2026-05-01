@@ -168,9 +168,9 @@ export default function HomeScreen({ onNavigate }) {
             ))}
           </div>
 
-          {/* Coming Soon Section */}
+          {/* Pro Features Section */}
           <div className="section-heading" style={{ marginTop: 24 }}>
-            <h3>What's coming</h3>
+            <h3>Settings & Customization</h3>
           </div>
 
           <motion.div
@@ -178,47 +178,16 @@ export default function HomeScreen({ onNavigate }) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
+            onClick={() => onNavigate('designer')}
+            style={{ cursor: 'pointer' }}
+            whileTap={{ scale: 0.98 }}
           >
-            <div className="csb-icon">
+            <div className="csb-icon" style={{ background: '#FCE7F3', color: '#DB2777' }}>
               <Sparkles size={20} />
             </div>
             <div className="csb-content">
-              <div className="csb-title">Phase 2 — Billing + QR</div>
-              <div className="csb-desc">Generate QR bills, share with customers instantly</div>
-            </div>
-            <ChevronRight size={18} className="csb-arrow" />
-          </motion.div>
-
-          <motion.div
-            className="coming-soon-banner"
-            style={{ marginTop: 10 }}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-          >
-            <div className="csb-icon" style={{ background: '#FEF3C7', color: '#D97706' }}>
-              <BookOpen size={20} />
-            </div>
-            <div className="csb-content">
-              <div className="csb-title">Phase 3 — Khata Book</div>
-              <div className="csb-desc">Track credit, send reminders, mark settled</div>
-            </div>
-            <ChevronRight size={18} className="csb-arrow" />
-          </motion.div>
-
-          <motion.div
-            className="coming-soon-banner"
-            style={{ marginTop: 10 }}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-          >
-            <div className="csb-icon" style={{ background: '#D1FAE5', color: '#059669' }}>
-              <TrendingUp size={20} />
-            </div>
-            <div className="csb-content">
-              <div className="csb-title">Phase 4 — Dashboard</div>
-              <div className="csb-desc">Revenue analytics, bill history, reports</div>
+              <div className="csb-title">Bill Designer</div>
+              <div className="csb-desc">Customize your bill layout, colors, and logo</div>
             </div>
             <ChevronRight size={18} className="csb-arrow" />
           </motion.div>

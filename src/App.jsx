@@ -10,6 +10,7 @@ import ProductManagerScreen from './screens/ProductManagerScreen';
 import BillingScreen from './screens/BillingScreen';
 import KhataScreen from './screens/KhataScreen';
 import BillViewerScreen from './screens/BillViewerScreen';
+import BillDesignerScreen from './screens/BillDesignerScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import BottomNav from './components/BottomNav';
 import './components/BottomNav.css';
@@ -94,6 +95,7 @@ function AppShell() {
           {activeTab === 'products' && <ProductManagerScreen />}
           {activeTab === 'khata' && <KhataScreen />}
           {activeTab === 'profile' && <ProfileScreen />}
+          {activeTab === 'designer' && <BillDesignerScreen onBack={() => setActiveTab('home')} />}
         </motion.div>
       </AnimatePresence>
 
@@ -171,7 +173,10 @@ function SplashScreen() {
 
 export default function App() {
   // Simple router for public pages
-  if (window.location.pathname === '/bill') {
+  const searchParams = new URLSearchParams(window.location.search);
+  const isBillRoute = window.location.pathname.includes('/bill') || searchParams.has('data') || searchParams.has('billData');
+  
+  if (isBillRoute) {
     return <BillViewerScreen />;
   }
 

@@ -9,7 +9,7 @@ export default function BillViewerScreen() {
   useEffect(() => {
     try {
       const searchParams = new URLSearchParams(window.location.search);
-      const dataParam = searchParams.get('data');
+      const dataParam = searchParams.get('data') || searchParams.get('billData');
       if (!dataParam) throw new Error('No bill data found in link.');
       
       const decoded = JSON.parse(atob(dataParam));
