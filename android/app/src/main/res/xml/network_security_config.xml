@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="false">
+        <!-- Allow Supabase API calls -->
+        <domain includeSubdomains="true">supabase.co</domain>
+        <!-- Allow QR server for generating QR codes -->
+        <domain includeSubdomains="true">api.qrserver.com</domain>
+        <!-- Allow GitHub Pages for bill viewer -->
+        <domain includeSubdomains="true">github.io</domain>
+    </domain-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
