@@ -95,3 +95,23 @@ create trigger on_shops_updated
 -- (localStorage) — NOT in Supabase. Only shop
 -- registration and employee logins are stored in cloud.
 -- ================================================
+
+-- ================================================
+-- FEEDBACK TABLE
+-- ================================================
+create table if not exists public.feedback (
+  id uuid primary key default uuid_generate_v4(),
+  user_email text,
+  message text not null,
+  created_at timestamptz default now()
+);
+
+alter table public.feedback enable row level security;
+
+-- Allow anyone to insert feedback
+create policy "Anyone can insert feedback" on public.feedback
+  for insert with check (true);
+
+-- Only allow admins (or nobody from the app) to read feedback
+create policy "Only admins read feedback" on public.feedback
+  for select using (false);
