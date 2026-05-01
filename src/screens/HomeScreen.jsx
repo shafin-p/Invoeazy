@@ -21,10 +21,18 @@ export default function HomeScreen({ onNavigate }) {
   const greeting = getGreeting();
   const ownerName = shop?.owner_name || user?.email?.split('@')[0] || 'Owner';
 
-  // Calculate today's bills and revenue
-  const today = new Date().toDateString();
-  const todaysBills = bills.filter(b => new Date(b.date).toDateString() === today);
-  const revenue = todaysBills.reduce((sum, b) => sum + b.total, 0);
+  // Calculate today's and this month's revenue
+  const today = new Date();
+  const todaysBills = bills.filter(b => new Date(b.date).toDateString() === today.toDateString());
+  const todayRevenue = todaysBills.reduce((sum, b) => sum + b.total, 0);
+
+  const currentMonth = today.getMonth();
+  const currentYear = today.getFullYear();
+  const monthlyBills = bills.filter(b => {
+    const d = new Date(b.date);
+    return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+  });
+  const monthlyRevenue = monthlyBills.reduce((sum, b) => sum + b.total, 0);
 
   const quickActions = [
     {
@@ -71,8 +79,8 @@ export default function HomeScreen({ onNavigate }) {
 
   const stats = [
     { label: "Today's Bills", value: String(todaysBills.length), icon: <Receipt size={16} />, color: 'var(--primary)' },
-    { label: 'Products', value: String(products.length), icon: <Package size={16} />, color: 'var(--info)' },
-    { label: 'Revenue', value: `₹${revenue.toLocaleString('en-IN')}`, icon: <TrendingUp size={16} />, color: 'var(--success)' },
+    { label: "Today's Rev", value: `₹${todayRevenue.toLocaleString('en-IN')}`, icon: <TrendingUp size={16} />, color: 'var(--info)' },
+    { label: 'Month Rev', value: `₹${monthlyRevenue.toLocaleString('en-IN')}`, icon: <TrendingUp size={16} />, color: 'var(--success)' },
   ];
 
   return (

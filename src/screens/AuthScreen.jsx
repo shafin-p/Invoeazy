@@ -233,27 +233,6 @@ export default function AuthScreen() {
         <span>or</span>
       </motion.div>
 
-      {/* Demo Mode */}
-      <motion.button
-        className="demo-btn"
-        onClick={() => demoLogin('owner')}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.55 }}
-        whileTap={{ scale: 0.97 }}
-      >
-        <Sparkles size={16} />
-        Try Demo Mode
-      </motion.button>
-
-      <motion.p
-        className="auth-footer-note"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.65 }}
-      >
-        Demo mode stores data locally on your device
-      </motion.p>
     </div>
   );
 }

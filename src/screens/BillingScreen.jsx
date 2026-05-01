@@ -142,7 +142,7 @@ export default function BillingScreen() {
 
     // Create base64 URL-safe string
     const encodedData = btoa(JSON.stringify(compactData));
-    const qrUrl = `https://shafin-p.github.io/invoeazy/?billData=${encodedData}`;
+    const qrUrl = `https://shafin-p.github.io/invoeazy/?data=${encodedData}`;
     billData.qrUrl = qrUrl;
 
     if (isKhata) {
@@ -349,9 +349,25 @@ export default function BillingScreen() {
               </div>
 
               <div className="selector-list">
-                {filteredProducts.length === 0 ? (
-                  <div className="text-center text-muted" style={{ padding: 20 }}>
-                    No products found. Add them in the Product Manager.
+                {search.trim() && filteredProducts.length === 0 ? (
+                  <div>
+                    <div className="text-center text-muted" style={{ padding: '12px 0 8px', fontSize: 13 }}>
+                      No product found for <strong>'{search}'</strong>
+                    </div>
+                    <button
+                      className="btn btn-primary btn-full"
+                      style={{ marginTop: 8 }}
+                      onClick={() => {
+                        const tempProduct = { id: `quick_${Date.now()}`, name: search.trim(), price: 0, unit: 'piece', isQuickAdd: true };
+                        openQtyModal(tempProduct);
+                      }}
+                    >
+                      <Plus size={16} /> Quick Add "{search.trim()}"
+                    </button>
+                  </div>
+                ) : filteredProducts.length === 0 ? (
+                  <div className="text-center text-muted" style={{ padding: 20, fontSize: 13 }}>
+                    No products yet. Add them in the Product Manager.
                   </div>
                 ) : (
                   filteredProducts.map(p => (
@@ -395,12 +411,29 @@ export default function BillingScreen() {
                 </button>
               </div>
 
-              <div style={{ width: '100%', marginBottom: 20 }}>
+              <div style={{ width: '100%', marginBottom: 16 }}>
                 <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>{qtyModal.name}</div>
-                <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-                  Base price: ₹{qtyModal.price} / {qtyModal.unit}
-                </div>
+                {!qtyModal.isQuickAdd && (
+                  <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+                    Base price: ₹{qtyModal.price} / {qtyModal.unit}
+                  </div>
+                )}
               </div>
+
+              {qtyModal.isQuickAdd && (
+                <div className="form-group" style={{ marginBottom: 16 }}>
+                  <label className="form-label">Price per Unit (₹)</label>
+                  <input
+                    className="form-input"
+                    type="number"
+                    step="any"
+                    placeholder="Enter price"
+                    value={inputQty === '' ? '' : qtyModal.price}
+                    onChange={e => { qtyModal.price = Number(e.target.value); setInputQty(prev => prev); }}
+                    autoFocus
+                  />
+                </div>
+              )}
 
               <div style={{ display: 'flex', gap: 12, width: '100%', marginBottom: 24 }}>
                 <div className="form-group" style={{ flex: 1, marginBottom: 0 }}>
@@ -411,7 +444,7 @@ export default function BillingScreen() {
                     step="any"
                     value={inputQty}
                     onChange={e => setInputQty(e.target.value)}
-                    autoFocus
+                    autoFocus={!qtyModal.isQuickAdd}
                   />
                 </div>
                 <div className="form-group" style={{ flex: 1, marginBottom: 0 }}>
