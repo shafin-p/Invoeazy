@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Invoeazy</string>
+    <string name="title_activity_main">Invoeazy</string>
+    <string name="package_name">com.invoeazy.app</string>
+    <string name="custom_url_scheme">com.invoeazy.app</string>
+</resources>

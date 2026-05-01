@@ -1,0 +1,47 @@
+name: Build Android APK
+
+on:
+  # This allows you to trigger the build manually from the GitHub website
+  workflow_dispatch:
+  # It will also build automatically when you upload code
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    name: Build Capacitor APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Web App
+        run: npm run build
+
+      - name: Set up Java JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Sync Capacitor Android Project
+        run: npx cap sync android
+
+      - name: Build APK File
+        working-directory: ./android
+        run: ./gradlew assembleDebug
+
+      - name: Upload APK so you can download it
+        uses: actions/upload-artifact@v4
+        with:
+          name: Invoeazy-App-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk

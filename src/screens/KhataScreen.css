@@ -1,0 +1,158 @@
+.khata-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.khata-summary {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.15);
+  border: 1px solid #FCD34D;
+}
+
+.ks-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #B45309;
+  margin-bottom: 4px;
+}
+
+.ks-val {
+  font-size: 28px;
+  font-weight: 800;
+  color: #78350F;
+  font-family: var(--font-heading);
+}
+
+.khata-balance-preview {
+  font-size: 14px;
+  text-align: right;
+  min-width: 60px;
+}
+
+/* Detail View */
+.balance-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  text-align: center;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+  transition: all 0.3s;
+}
+
+.balance-card.settled {
+  background: var(--success-pale);
+  border-color: var(--success);
+}
+
+.balance-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.balance-amount {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+
+.balance-card.settled .balance-amount {
+  color: var(--success);
+}
+
+.balance-status {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--danger);
+  background: var(--danger-pale);
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+}
+
+.balance-card.settled .balance-status {
+  background: white;
+  color: var(--success);
+}
+
+.tx-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.tx-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tx-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+}
+
+.tx-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tx-icon.credit {
+  background: var(--danger-pale);
+  color: var(--danger);
+}
+
+.tx-icon.payment {
+  background: var(--success-pale);
+  color: var(--success);
+}
+
+.tx-info {
+  flex: 1;
+}
+
+.tx-note {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.tx-date {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.tx-amount {
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-heading);
+}
+
+.tx-amount.credit {
+  color: var(--danger);
+}
+
+.tx-amount.payment {
+  color: var(--success);
+}
