@@ -46,39 +46,27 @@ To run the web version locally in your browser:
 
 ---
 
-## 📱 Building the Android APK
+## 📱 Download & Install Android APK
 
-This project uses **Capacitor** to wrap the web app into a native Android APK.
+You don't need Android Studio or a heavy computer to get the `.apk` file. We use **GitHub Actions** to automatically build the app in the cloud!
 
-### Prerequisites for APK Generation
-You must have **Android Studio** installed on your Windows machine to compile the APK. 
-Download it from: [developer.android.com/studio](https://developer.android.com/studio)
+### How to Download the Latest APK:
+1. Go to the **[Actions tab](https://github.com/)** of this GitHub repository. *(Replace URL once uploaded)*
+2. Click on the latest green successful build named **"Build Android APK"**.
+3. Scroll down to the **"Artifacts"** section.
+4. Click on **`Invoeazy-App-APK`** to download the zip file.
+5. Extract the `.zip` to get your `.apk` file.
+6. Transfer it to your Android phone, click it, and install!
 
-### Steps to create the APK:
+---
 
-1. **Build the Production Web App:**
-   First, build the optimized React files into the `dist/` folder:
-   ```bash
-   npm run build
+## ☁️ Hosting for QR Bills
+
+To ensure the QR codes scanned by customers work perfectly:
+1. Host this code for free on **GitHub Pages**, **Vercel**, or **Netlify**.
+2. Once you have your public URL (e.g. `https://your-name.github.io/invoeazy/`), open `src/screens/BillingScreen.jsx`.
+3. Update the `qrUrl` constant to match your public URL:
+   ```javascript
+   const qrUrl = `https://your-name.github.io/invoeazy/?data=${encodedData}`;
    ```
-
-2. **Sync with Capacitor Android Project:**
-   This copies your `dist/` folder into the Android Studio project:
-   ```bash
-   npx cap sync android
-   ```
-
-3. **Open Android Studio to Build the APK:**
-   This command opens the Capacitor Android project inside Android Studio:
-   ```bash
-   npx cap open android
-   ```
-
-4. **Inside Android Studio:**
-   - Wait for Gradle to finish syncing (watch the progress bar at the bottom).
-   - Go to the top menu: **Build > Build Bundle(s) / APK(s) > Build APK(s)**
-   - Once finished, a popup will appear in the bottom right corner saying "Build APK(s) successfully".
-   - Click the **"locate"** link in that popup to open the folder containing your brand new `app-debug.apk` file!
-   - You can transfer this `.apk` file to your Android phone and install it.
-
-*Note: You can also connect your Android phone via USB, enable USB Debugging, and press the green "Play" button in Android Studio to install it directly to your device.*
+4. Push the changes to GitHub. The new APK built will now generate internet-accessible QR codes!

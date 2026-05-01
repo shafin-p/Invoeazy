@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Plus, Minus, X, Check, Search, IndianRupee, QrCode, 
+import {
+  Plus, Minus, X, Check, Search, IndianRupee, QrCode,
   Receipt, User, Phone, Trash2, BookOpen
 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
@@ -11,15 +11,15 @@ import './BillingScreen.css';
 
 export default function BillingScreen() {
   const { products, addBill, shop, khata, addKhataCustomer, updateKhataCustomer } = useApp();
-  
+
   const [cart, setCart] = useState([]);
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [isKhata, setIsKhata] = useState(false);
-  
+
   const [showProductSheet, setShowProductSheet] = useState(false);
   const [search, setSearch] = useState('');
-  
+
   const [generatedBill, setGeneratedBill] = useState(null);
 
   // Qty selection modal
@@ -30,7 +30,7 @@ export default function BillingScreen() {
   const cartTotal = cart.reduce((sum, item) => sum + item.total, 0);
 
   const getSubUnits = (baseUnit) => {
-    switch(baseUnit) {
+    switch (baseUnit) {
       case 'kg': return ['kg', 'gram'];
       case 'litre': return ['litre', 'ml'];
       case 'strip': return ['strip', 'piece'];
@@ -49,10 +49,10 @@ export default function BillingScreen() {
   const confirmAddProduct = () => {
     const amount = Number(inputQty);
     if (!amount || amount <= 0) return toast.error('Enter a valid quantity');
-    
+
     const product = qtyModal;
     let finalQty = amount;
-    
+
     // convert if necessary to calculate price
     if (product.unit === 'kg' && inputUnit === 'gram') finalQty = amount / 1000;
     else if (product.unit === 'litre' && inputUnit === 'ml') finalQty = amount / 1000;
@@ -61,9 +61,9 @@ export default function BillingScreen() {
     else if (product.unit === 'dozen' && inputUnit === 'piece') finalQty = amount / 12;
 
     const itemTotal = product.price * finalQty;
-    
+
     const existing = cart.find(i => i.productId === product.id && i.displayUnit === inputUnit);
-    
+
     if (existing) {
       const newDisplayQty = existing.displayQty + amount;
       const newMultiplier = existing.qtyMultiplier + finalQty;
@@ -87,7 +87,7 @@ export default function BillingScreen() {
       };
       setCart([...cart, newItem]);
     }
-    
+
     setQtyModal(null);
     setShowProductSheet(false);
     toast.success(`Added ${product.name}`);
@@ -114,10 +114,10 @@ export default function BillingScreen() {
     if (isKhata && !customerName.trim()) {
       return toast.error('Customer Name is required for Khata');
     }
-    
+
     const billId = uuidv4();
     const date = new Date().toISOString();
-    
+
     const billData = {
       id: billId,
       date,
@@ -139,16 +139,16 @@ export default function BillingScreen() {
       isKhata,
       items: cart.map(i => ({ name: i.name, displayQty: i.displayQty, displayUnit: i.displayUnit, total: i.total }))
     };
-    
+
     // Create base64 URL-safe string
     const encodedData = btoa(JSON.stringify(compactData));
-    const qrUrl = `${window.location.origin}/bill?data=${encodedData}`;
+    const qrUrl = `https://shafin-p.github.io/invoeazy/?billData=${encodedData}`;
     billData.qrUrl = qrUrl;
 
     if (isKhata) {
       const nameMatch = customerName.trim().toLowerCase();
       let customer = khata.find(c => c.name.toLowerCase() === nameMatch);
-      
+
       if (!customer) {
         customer = {
           id: uuidv4(),
@@ -159,21 +159,21 @@ export default function BillingScreen() {
         };
         addKhataCustomer(customer);
       }
-      
+
       const tx = {
         id: uuidv4(),
         date,
         type: 'credit',
         amount: cartTotal,
-        note: `Bill #${billId.substring(0,6)}`
+        note: `Bill #${billId.substring(0, 6)}`
       };
-      
+
       const updatedCustomer = {
         ...customer,
         balance: customer.balance + cartTotal,
         transactions: [tx, ...customer.transactions]
       };
-      
+
       updateKhataCustomer(customer.id, updatedCustomer);
       toast.success('Added to Khata!');
     } else {
@@ -202,14 +202,14 @@ export default function BillingScreen() {
 
       <div className="page">
         <div className="page-content" style={{ paddingBottom: 160 }}>
-          
+
           {/* Customer Details */}
           <div className="card customer-card">
             <div className="form-group" style={{ marginBottom: 12 }}>
               <div className="form-input-icon">
                 <span className="input-icon"><User size={16} /></span>
-                <input 
-                  className="form-input" 
+                <input
+                  className="form-input"
                   placeholder={isKhata ? "Customer Name (Required)" : "Customer Name (Optional)"}
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
@@ -219,9 +219,9 @@ export default function BillingScreen() {
             <div className="form-group" style={{ marginBottom: 12 }}>
               <div className="form-input-icon">
                 <span className="input-icon"><Phone size={16} /></span>
-                <input 
-                  className="form-input" 
-                  placeholder="Phone Number (Optional)" 
+                <input
+                  className="form-input"
+                  placeholder="Phone Number (Optional)"
                   type="tel"
                   maxLength={10}
                   value={customerPhone}
@@ -229,10 +229,10 @@ export default function BillingScreen() {
                 />
               </div>
             </div>
-            
+
             <label className="khata-toggle" style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', padding: '4px 0' }}>
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 checked={isKhata}
                 onChange={e => setIsKhata(e.target.checked)}
                 style={{ width: 18, height: 18, accentColor: 'var(--primary)' }}
@@ -245,8 +245,8 @@ export default function BillingScreen() {
 
           <div className="section-heading" style={{ marginTop: 20 }}>
             <h3>Items ({cart.length})</h3>
-            <button 
-              className="btn btn-primary btn-sm" 
+            <button
+              className="btn btn-primary btn-sm"
               onClick={() => setShowProductSheet(true)}
             >
               <Plus size={16} /> Add
@@ -265,7 +265,7 @@ export default function BillingScreen() {
             <div className="cart-list">
               <AnimatePresence>
                 {cart.map(item => (
-                  <motion.div 
+                  <motion.div
                     key={item.id}
                     layout
                     initial={{ opacity: 0, x: -20 }}
@@ -279,7 +279,7 @@ export default function BillingScreen() {
                         {item.displayQty} {item.displayUnit} @ ₹{item.basePrice}/{item.baseUnit}
                       </div>
                     </div>
-                    
+
                     <div className="cart-item-controls">
                       <div className="cart-item-total">
                         ₹{item.total.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
@@ -303,7 +303,7 @@ export default function BillingScreen() {
           <span className="total-label">Total Amount</span>
           <span className="total-value">₹{cartTotal.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span>
         </div>
-        <button 
+        <button
           className="btn btn-primary btn-full generate-btn"
           disabled={cart.length === 0}
           onClick={generateQRBill}
@@ -316,14 +316,14 @@ export default function BillingScreen() {
       {/* Select Products Bottom Sheet */}
       <AnimatePresence>
         {showProductSheet && (
-          <motion.div 
+          <motion.div
             className="overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={(e) => e.target === e.currentTarget && setShowProductSheet(false)}
           >
-            <motion.div 
+            <motion.div
               className="bottom-sheet product-selector-sheet"
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
@@ -337,10 +337,10 @@ export default function BillingScreen() {
                   <X size={20} />
                 </button>
               </div>
-              
+
               <div className="search-bar" style={{ marginBottom: 16 }}>
                 <Search size={17} />
-                <input 
+                <input
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   placeholder="Search products..."
@@ -375,13 +375,13 @@ export default function BillingScreen() {
       {/* Quantity & Unit Selection Modal */}
       <AnimatePresence>
         {qtyModal && (
-          <motion.div 
+          <motion.div
             className="overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <motion.div 
+            <motion.div
               className="bill-modal"
               initial={{ scale: 0.9, y: 20, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
@@ -394,7 +394,7 @@ export default function BillingScreen() {
                   <X size={20} />
                 </button>
               </div>
-              
+
               <div style={{ width: '100%', marginBottom: 20 }}>
                 <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>{qtyModal.name}</div>
                 <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
@@ -405,8 +405,8 @@ export default function BillingScreen() {
               <div style={{ display: 'flex', gap: 12, width: '100%', marginBottom: 24 }}>
                 <div className="form-group" style={{ flex: 1, marginBottom: 0 }}>
                   <label className="form-label">Qty</label>
-                  <input 
-                    className="form-input" 
+                  <input
+                    className="form-input"
                     type="number"
                     step="any"
                     value={inputQty}
@@ -416,7 +416,7 @@ export default function BillingScreen() {
                 </div>
                 <div className="form-group" style={{ flex: 1, marginBottom: 0 }}>
                   <label className="form-label">Unit</label>
-                  <select 
+                  <select
                     className="form-input"
                     value={inputUnit}
                     onChange={e => setInputUnit(e.target.value)}
@@ -439,13 +439,13 @@ export default function BillingScreen() {
       {/* Generated Bill Modal */}
       <AnimatePresence>
         {generatedBill && (
-          <motion.div 
+          <motion.div
             className="overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <motion.div 
+            <motion.div
               className="bill-modal"
               initial={{ scale: 0.9, y: 20, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
@@ -463,11 +463,11 @@ export default function BillingScreen() {
 
               <div className="qr-container">
                 <div className="qr-box">
-                  <img 
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(generatedBill.qrUrl)}`} 
-                    alt="QR Code" 
-                    width={180} 
-                    height={180} 
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(generatedBill.qrUrl)}`}
+                    alt="QR Code"
+                    width={180}
+                    height={180}
                   />
                 </div>
                 <p className="qr-hint">Scan to view & save the digital bill</p>
@@ -495,7 +495,7 @@ export default function BillingScreen() {
                 )}
               </div>
 
-              <button 
+              <button
                 className="btn btn-secondary btn-full"
                 onClick={() => {
                   setGeneratedBill(null);
