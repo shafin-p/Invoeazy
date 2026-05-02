@@ -233,7 +233,7 @@ export default function AuthScreen() {
               </div>
               <h3 className="otp-title">Verify Your Email</h3>
               <p className="otp-desc">
-                We sent a 6-digit code to <strong>{pendingEmail}</strong>. Enter it below to activate your account.
+                We sent a secure code to <strong>{pendingEmail}</strong>. Enter it below to activate your account.
               </p>
             </div>
 
@@ -244,9 +244,9 @@ export default function AuthScreen() {
                   className="form-input otp-input"
                   type="number"
                   placeholder="000000"
-                  maxLength={6}
+                  maxLength={8}
                   value={otp}
-                  onChange={e => setOtp(e.target.value.slice(0, 6))}
+                  onChange={e => setOtp(e.target.value.slice(0, 8))}
                   autoFocus
                   style={{ textAlign: 'center', fontSize: 28, fontWeight: 700, letterSpacing: 8 }}
                 />
@@ -302,7 +302,7 @@ export default function AuthScreen() {
               </div>
               <h3 className="otp-title">Reset Password</h3>
               <p className="otp-desc">
-                Enter your email address and we'll send you a 6-digit code to reset your password.
+                Enter your email address and we'll send you a secure code to reset your password.
               </p>
             </div>
 
@@ -364,9 +364,9 @@ export default function AuthScreen() {
                   className="form-input otp-input"
                   type="number"
                   placeholder="000000"
-                  maxLength={6}
+                  maxLength={8}
                   value={otp}
-                  onChange={e => setOtp(e.target.value.slice(0, 6))}
+                  onChange={e => setOtp(e.target.value.slice(0, 8))}
                   autoFocus
                   style={{ textAlign: 'center', fontSize: 24, fontWeight: 700, letterSpacing: 8, padding: '8px' }}
                 />

@@ -72,7 +72,7 @@ export default function HomeScreen({ onNavigate }) {
       sublabel: 'Manage staff',
       color: '#10B981',
       bg: '#D1FAE5',
-      tab: 'profile',
+      tab: 'employees',
       badge: null,
     },
   ];

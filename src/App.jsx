@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Toaster } from 'react-hot-toast';
+import { Toaster, toast } from 'react-hot-toast';
 
 import { AppProvider, useApp } from './context/AppContext';
+import { App as CapacitorApp } from '@capacitor/app';
 import AuthScreen from './screens/AuthScreen';
 import ShopSetupScreen from './screens/ShopSetupScreen';
 import HomeScreen from './screens/HomeScreen';
@@ -12,6 +13,7 @@ import KhataScreen from './screens/KhataScreen';
 import BillViewerScreen from './screens/BillViewerScreen';
 import BillDesignerScreen from './screens/BillDesignerScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import EmployeeManagerScreen from './screens/EmployeeManagerScreen';
 import BottomNav from './components/BottomNav';
 import './components/BottomNav.css';
 
@@ -24,6 +26,40 @@ const pageTransition = {
 function AppShell() {
   const { user, shop, loading, authReady } = useApp();
   const [activeTab, setActiveTab] = useState('home');
+
+  // Handle Android Hardware Back Button
+  useEffect(() => {
+    let lastBackPress = 0;
+    
+    const backListener = CapacitorApp.addListener('backButton', ({ canGoBack }) => {
+      if (activeTab !== 'home') {
+        // If not on home tab, go back to home tab
+        setActiveTab('home');
+      } else {
+        // If on home tab, require double press to exit
+        const now = Date.now();
+        if (now - lastBackPress < 2000) {
+          CapacitorApp.exitApp();
+        } else {
+          lastBackPress = now;
+          toast('Press back again to exit', {
+            icon: '🚪',
+            duration: 2000,
+            style: {
+              borderRadius: '14px',
+              background: '#333',
+              color: '#fff',
+              fontSize: '13px'
+            }
+          });
+        }
+      }
+    });
+
+    return () => {
+      backListener.then(l => l.remove());
+    };
+  }, [activeTab]);
 
   // Demo mode: restore from localStorage on first load
   useEffect(() => {
@@ -96,6 +132,7 @@ function AppShell() {
           {activeTab === 'khata' && <KhataScreen />}
           {activeTab === 'profile' && <ProfileScreen />}
           {activeTab === 'designer' && <BillDesignerScreen onBack={() => setActiveTab('home')} />}
+          {activeTab === 'employees' && <EmployeeManagerScreen onBack={() => setActiveTab('home')} />}
         </motion.div>
       </AnimatePresence>
 
@@ -144,7 +181,7 @@ function SplashScreen() {
           boxShadow: '0 12px 40px rgba(124,58,237,0.15)',
         }}
       >
-        <img src="./logo.svg" alt="Invoeazy" style={{ width: 48, height: 48 }} />
+        <img src="./favicon.svg" alt="Invoeazy" style={{ width: 48, height: 48 }} />
       </motion.div>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
