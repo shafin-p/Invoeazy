@@ -144,7 +144,7 @@ function SplashScreen() {
           boxShadow: '0 12px 40px rgba(124,58,237,0.15)',
         }}
       >
-        <img src="/logo.svg" alt="Invoeazy" style={{ width: 48, height: 48 }} />
+        <img src="./logo.svg" alt="Invoeazy" style={{ width: 48, height: 48 }} />
       </motion.div>
       <motion.div
         initial={{ opacity: 0, y: 10 }}

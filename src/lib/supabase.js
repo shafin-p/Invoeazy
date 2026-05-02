@@ -36,7 +36,8 @@ export const getShopByOwner = async (userId) => {
     .from('shops')
     .select('*')
     .eq('owner_id', userId)
-    .single();
+    .limit(1)
+    .maybeSingle();
   return { data, error };
 };
 
@@ -45,7 +46,8 @@ export const getShopForEmployee = async (userEmail) => {
     .from('employees')
     .select('*, shops(*)')
     .eq('email', userEmail)
-    .single();
+    .limit(1)
+    .maybeSingle();
   return { data, error };
 };
 

@@ -199,6 +199,63 @@ export default function HomeScreen({ onNavigate }) {
             </div>
             <ChevronRight size={18} className="csb-arrow" />
           </motion.div>
+
+          {/* Recent Bills Section */}
+          <div className="section-heading" style={{ marginTop: 32, marginBottom: 12 }}>
+            <h3>Recent Bills</h3>
+            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{bills.length} saved</span>
+          </div>
+
+          <div className="recent-bills-list" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {bills.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-muted)', fontSize: 13 }}>
+                No bills generated yet. Go to Billing to create one!
+              </div>
+            ) : (
+              bills.slice(0, 5).map((b, idx) => (
+                <div key={b.id} style={{ 
+                  background: 'var(--bg-card)', 
+                  border: '1px solid var(--border)', 
+                  borderRadius: '12px', 
+                  padding: '16px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--text-primary)', marginBottom: 4 }}>
+                      #{b.id.substring(0,8).toUpperCase()}
+                    </div>
+                    <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                      {new Date(b.date).toLocaleDateString()} • {b.items.length} items
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text-primary)' }}>
+                      ₹{b.total.toLocaleString()}
+                    </div>
+                    {b.isKhata && (
+                      <span style={{ fontSize: 10, background: '#FEF3C7', color: '#D97706', padding: '2px 6px', borderRadius: 4, fontWeight: 600 }}>
+                        KHATA
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+            
+            {bills.length > 5 && (
+              <button 
+                className="btn btn-ghost" 
+                style={{ width: '100%', marginTop: 8 }}
+                onClick={() => onNavigate('profile')}
+              >
+                View All in History
+              </button>
+            )}
+          </div>
+          
+          <div style={{ height: 100 }}></div>
         </div>
       </div>
     </div>
