@@ -91,6 +91,65 @@ export default function BillViewerScreen() {
           <p>Powered by <strong>Invoeazy</strong></p>
         </div>
       </div>
+      
+      {/* Floating Download Button */}
+      <button 
+        className="btn btn-primary"
+        onClick={async () => {
+          try {
+            const html2canvas = (await import('html2canvas')).default;
+            const element = document.querySelector('.bill-card');
+            
+            // Add a temporary class to ensure rendering is perfect before capture
+            element.style.borderRadius = '0';
+            element.style.margin = '0';
+            
+            const canvas = await html2canvas(element, {
+              scale: 2, // High quality
+              useCORS: true,
+              backgroundColor: '#ffffff'
+            });
+            
+            // Restore styles
+            element.style.borderRadius = '';
+            element.style.margin = '';
+            
+            const image = canvas.toDataURL('image/png', 1.0);
+            const link = document.createElement('a');
+            link.download = `Invoice_${bill.shopName.replace(/\s+/g, '_')}_${bill.id.substring(0, 6)}.png`;
+            link.href = image;
+            link.click();
+          } catch (err) {
+            console.error('Failed to download receipt:', err);
+            alert('Failed to download receipt. Please try taking a screenshot instead.');
+          }
+        }}
+        style={{
+          position: 'fixed',
+          bottom: '24px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: 'calc(100% - 48px)',
+          maxWidth: '380px',
+          boxShadow: '0 8px 24px rgba(124, 58, 237, 0.4)',
+          borderRadius: '16px',
+          padding: '16px',
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '8px',
+          zIndex: 100
+        }}
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Download Receipt
+      </button>
+      
+      {/* Spacer so button doesn't cover content */}
+      <div style={{ height: 100 }}></div>
     </div>
   );
 }
