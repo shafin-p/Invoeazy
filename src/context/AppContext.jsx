@@ -137,6 +137,15 @@ export function AppProvider({ children }) {
 
     // 2. Supabase auth listener for real users
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // Safety timeout to prevent getting stuck on splash screen during bad network
+      const safetyTimeout = setTimeout(() => {
+        if (loading) {
+          setLoading(false);
+          setAuthReady(true);
+          toast.error('Network is very slow. Some features might not work.');
+        }
+      }, 6000);
+
       const currentUser = session?.user ?? null;
       setUser(currentUser);
 
@@ -194,6 +203,7 @@ export function AppProvider({ children }) {
         setKhata([]);
       }
 
+      clearTimeout(safetyTimeout);
       setLoading(false);
       setAuthReady(true);
     });

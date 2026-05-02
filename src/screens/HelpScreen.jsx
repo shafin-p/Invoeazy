@@ -77,7 +77,7 @@ export default function HelpScreen({ onBack }) {
         
         {/* Contact Cards */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
-          <div className="contact-card" onClick={() => window.location.href = 'mailto:support@invoeazy.com'}>
+          <div className="contact-card" onClick={() => toast('Email support coming soon!')}>
             <div className="contact-icon" style={{ background: '#DBEAFE', color: '#2563EB' }}>
               <Mail size={20} />
             </div>

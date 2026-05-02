@@ -136,15 +136,15 @@ function SplashScreen() {
         style={{
           width: 80,
           height: 80,
-          background: 'linear-gradient(135deg, #7C3AED, #9333EA)',
+          background: 'white',
           borderRadius: 24,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 12px 40px rgba(124,58,237,0.35)',
+          boxShadow: '0 12px 40px rgba(124,58,237,0.15)',
         }}
       >
-        <span style={{ fontSize: 36 }}>🏪</span>
+        <img src="/logo.svg" alt="Invoeazy" style={{ width: 48, height: 48 }} />
       </motion.div>
       <motion.div
         initial={{ opacity: 0, y: 10 }}

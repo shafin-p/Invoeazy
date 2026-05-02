@@ -259,6 +259,7 @@
   letter-spacing: 8px !important;
   /* Remove number input arrows */
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 .otp-input::-webkit-outer-spin-button,
 .otp-input::-webkit-inner-spin-button {
