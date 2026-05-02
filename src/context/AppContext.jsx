@@ -110,6 +110,9 @@ export function AppProvider({ children }) {
   const loadLocalKhata = useCallback((shopId) => loadLocalData(`invoeazy_khata_${shopId}`), [loadLocalData]);
   const saveLocalKhata = useCallback((shopId, data) => saveLocalData(`invoeazy_khata_${shopId}`, data), [saveLocalData]);
 
+  const loadLocalShop = useCallback((userId) => loadLocalData(`invoeazy_shop_${userId}`, null), [loadLocalData]);
+  const saveLocalShop = useCallback((userId, shop) => saveLocalData(`invoeazy_shop_${userId}`, shop), [saveLocalData]);
+
   // Initialize: restore demo session OR listen to Supabase auth
   useEffect(() => {
     // 1. Check for saved demo session first
@@ -137,33 +140,38 @@ export function AppProvider({ children }) {
 
     // 2. Supabase auth listener for real users
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      // Safety timeout to prevent getting stuck on splash screen during bad network
-      const safetyTimeout = setTimeout(() => {
-        if (loading) {
-          setLoading(false);
-          setAuthReady(true);
-          toast.error('Network is very slow. Some features might not work.');
-        }
-      }, 6000);
-
       const currentUser = session?.user ?? null;
       setUser(currentUser);
 
       if (currentUser) {
+        // --- INSTANT LOAD FROM CACHE ---
+        const cachedShop = loadLocalShop(currentUser.id);
+        if (cachedShop) {
+          setShop(cachedShop);
+          setProducts(loadLocalProducts(cachedShop.id) || getDefaultProducts(cachedShop.type));
+          setBills(loadLocalBills(cachedShop.id));
+          setKhata(loadLocalKhata(cachedShop.id));
+          setLoading(false);
+          setAuthReady(true);
+        }
+
         try {
           // 1. Check if user is an owner
           const { data: shopData } = await getShopByOwner(currentUser.id);
           
           if (shopData) {
             setShop(shopData);
-            const local = loadLocalProducts(shopData.id);
-            if (local) {
-              setProducts(local);
-            } else {
+            saveLocalShop(currentUser.id, shopData);
+            
+            const localProds = loadLocalProducts(shopData.id);
+            if (!localProds) {
               const defaults = getDefaultProducts(shopData.type);
               setProducts(defaults);
               saveLocalProducts(shopData.id, defaults);
+            } else {
+              setProducts(localProds);
             }
+            
             setBills(loadLocalBills(shopData.id));
             setKhata(loadLocalKhata(shopData.id));
           } else {
@@ -174,22 +182,20 @@ export function AppProvider({ children }) {
             if (empData && empData.shops) {
               const employeeShop = empData.shops;
               setShop(employeeShop);
-              
-              // Save permissions in local storage so the UI can adapt
+              saveLocalShop(currentUser.id, employeeShop);
               localStorage.setItem('invoeazy_emp_permissions', JSON.stringify(empData.permissions));
               
-              const local = loadLocalProducts(employeeShop.id);
-              if (local) {
-                setProducts(local);
-              } else {
+              const localProds = loadLocalProducts(employeeShop.id);
+              if (!localProds) {
                 const defaults = getDefaultProducts(employeeShop.type);
                 setProducts(defaults);
                 saveLocalProducts(employeeShop.id, defaults);
+              } else {
+                setProducts(localProds);
               }
               setBills(loadLocalBills(employeeShop.id));
               setKhata(loadLocalKhata(employeeShop.id));
-            } else {
-              // User is neither owner nor employee -> needs to setup shop
+            } else if (!cachedShop) {
               setShop(null);
             }
           }
@@ -203,7 +209,6 @@ export function AppProvider({ children }) {
         setKhata([]);
       }
 
-      clearTimeout(safetyTimeout);
       setLoading(false);
       setAuthReady(true);
     });
@@ -213,6 +218,7 @@ export function AppProvider({ children }) {
 
   const updateShopState = (shopData) => {
     setShop(shopData);
+    if (user) saveLocalShop(user.id, shopData);
     const prods = loadLocalProducts(shopData.id) || getDefaultProducts(shopData.type);
     setProducts(prods);
     saveLocalProducts(shopData.id, prods);
