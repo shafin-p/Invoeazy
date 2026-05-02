@@ -15,7 +15,35 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <style>
+        .initial-loader {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100vh;
+          width: 100vw;
+          background: #F8F5FF;
+          font-family: 'Sora', sans-serif;
+          color: #7C3AED;
+        }
+        .loader-spinner {
+          width: 40px;
+          height: 40px;
+          border: 4px solid rgba(124, 58, 237, 0.2);
+          border-left-color: #7C3AED;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin-bottom: 16px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      </style>
+      <div class="initial-loader">
+        <div class="loader-spinner"></div>
+        <div style="font-weight: 600; font-size: 16px;">Loading Receipt...</div>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
